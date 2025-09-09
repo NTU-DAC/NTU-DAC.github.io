@@ -1138,12 +1138,21 @@ assignment/ <br>
 
         // Download functionality
         function downloadFile(filename) {
-            const link = document.createElement('a');
-            link.href = `materials/${filename}`;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // List of available files
+            const availableFiles = [
+                'test_judge.zip'
+            ]
+            if (availableFiles.includes(filename)){
+                const link = document.createElement('a');
+                link.href = `materials/${filename}`;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            else{
+                alert('This assignment is not yet available. Please check back later.');
+            }
         }
 
         // Close mobile menu when clicking outside
