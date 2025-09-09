@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analytics Club - Course Materials</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-orange: #E97239;
+            --primary-blue: #1E4A73;
+            --light-orange: #F5A573;
+            --light-blue: #4A7BA7;
+            --bg-light: #EFEAE6;
+            --text-dark: #2C3E50;
+            --text-light: #6C757D;
+            --white: #EFEAE6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--bg-light) 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-orange);
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-blue);
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Main content */
+        main {
+            min-height: calc(100vh - 120px);
+            padding: 2rem 0;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home page */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+            color: var(--white);
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+            border-radius: 15px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: var(--primary-orange);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: var(--light-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(233, 114, 57, 0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature i {
+            font-size: 3rem;
+            color: var(--primary-orange);
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        /* Course schedule */
+        .course-week {
+            background: var(--white);
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .course-week:hover {
+            transform: translateY(-3px);
+        }
+
+        .week-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .week-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .week-content {
+            padding: 2rem;
+            display: none;
+        }
+
+        .week-content.active {
+            display: block;
+        }
+
+        .week-description {
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* Lesson structure */
+        .lesson-item {
+            background: #f0f0f0;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            overflow: hidden;
+        }
+
+        .lesson-header {
+            background: #e5e7eb;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .lesson-header:hover {
+            background: #d1d5db;
+        }
+
+        .lesson-header h4 {
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .lesson-content {
+            padding: 1.5rem;
+            display: none;
+            background: #E0E0E0;
+        }
+
+        .lesson-content.active {
+            display: block;
+        }
+
+        .lesson-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .lesson-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1rem;
+            background: var(--bg-light);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .lesson-link:hover {
+            background: var(--primary-orange);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 114, 57, 0.3);
+        }
+
+        .lesson-link i {
+            font-size: 1.1rem;
+        }
+
+        /* Week assignment section */
+        .week-assignments {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .assignment-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .resource-link:hover {
+            background: var(--primary-orange);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 114, 57, 0.3);
+        }
+
+        .resource-link i {
+            font-size: 1.2rem;
+        }
+
+        /* Tutorial page */
+        .tutorial-section {
+            background: var(--white);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .tutorial-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .step {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .step::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--primary-orange);
+            color: var(--white);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+        }
+
+        /* About page */
+        .about-content {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .about-content h2 {
+            color: var(--primary-blue);
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                box-shadow: var(--shadow);
+                padding: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .resource-links {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-links {
+                grid-template-columns: 1fr;
+            }
+
+            .week-header {
+                padding: 1rem;
+            }
+
+            .week-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <img src="assets/logo.png" alt="DAC Logo">
+                <div class="logo-text">Python Arena</div>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" onclick="showPage('home')" class="active">Home</a></li>
+                <li><a href="#" onclick="showPage('schedule')">Schedule</a></li>
+                <li><a href="#" onclick="showPage('tutorial')">Tutorial</a></li>
+                <li><a href="#" onclick="showPage('about')">About</a></li>
+            </ul>
+            <div class="mobile-menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>Welcome to Python Arena</h1>
+                <p>Master your Python skills through this course series and practice assignments</p>
+                <a href="#" onclick="showPage('schedule')" class="cta-button">Start Learning</a>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-video"></i>
+                    <h3>Video Lectures</h3>
+                    <p>Comprehensive video tutorials covering all aspects of Python</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-code"></i>
+                    <h3>Interactive Coding</h3>
+                    <p>Practice with Google Colab notebooks and hands-on exercises</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-download"></i>
+                    <h3>Course Materials</h3>
+                    <p>Download assignments, test data, and grading scripts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Page -->
+        <div id="schedule" class="page">
+            <h2 style="text-align: center; color: var(--primary-blue); margin-bottom: 2rem; font-size: 2.5rem;">Course Schedule</h2>
+            
+            <!-- Week 1 -->
+            <div class="course-week">
+                <div class="week-header" onclick="toggleWeek(1)">
+                    <h3>Week 1: Introduction to Python</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="week-content" id="week1">
+                    <div class="week-description">
+                        Learn the fundamentals of Python programming including Google Colab, variables, numbers, and strings.
+                    </div>
+                    
+                    <!-- Lesson 1.1 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson1-1')">
+                            <h4>1.1 Introduction to Google Colab + Basic I/O</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson1-1">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 1.2 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson1-2')">
+                            <h4>1.2 Variables Concept</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson1-2">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 1.3 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson1-3')">
+                            <h4>1.3 Numbers</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson1-3">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 1.4 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson1-4')">
+                            <h4>1.4 Strings</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson1-4">
+                            <div class="lesson-links">
+                                <a href="https://youtu.be/oIoXwy9L5Kc?si=O04pNOUbMMbQhw8z" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https://colab.research.google.com/drive/1WpaVDblU0ep-gUBZdeoWXCzp9MiU11PF?usp=sharing" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 1 Assignments -->
+                    <div class="week-assignments">
+                        <div class="assignment-title">
+                            <i class="fas fa-tasks"></i>
+                            Week 1 Assignment
+                        </div>
+                        <div class="resource-links">
+                            <a href="#" onclick="downloadFile('test_judge.zip')" class="resource-link">
+                                <i class="fas fa-download" style="color: #28A745;"></i>
+                                Assignment Download
+                            </a>
+                            <a href="https:/" target="_blank" class="resource-link">
+                                <i class="fas fa-edit" style="color: #4285F4;"></i>
+                                Assignment Submission
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 2 -->
+            <div class="course-week">
+                <div class="week-header" onclick="toggleWeek(2)">
+                    <h3>Week 2: Basic Control Flow</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="week-content" id="week2">
+                    <div class="week-description">
+                        Master control flow structures including conditionals, loops, and list operations.
+                    </div>
+                    
+                    <!-- Lesson 2.1 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson2-1')">
+                            <h4>2.1 Conditionals: if-elif-else</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson2-1">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 2.2 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson2-2')">
+                            <h4>2.2 Loops: while and for</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson2-2">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 2.3 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson2-3')">
+                            <h4>2.3 Lists</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson2-3">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 2 Assignments -->
+                    <div class="week-assignments">
+                        <div class="assignment-title">
+                            <i class="fas fa-tasks"></i>
+                            Week 2 Assignment
+                        </div>
+                        <div class="resource-links">
+                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
+                                <i class="fas fa-download" style="color: #28A745;"></i>
+                                Assignment Download
+                            </a>
+                            <a href="https:/" target="_blank" class="resource-link">
+                                <i class="fas fa-edit" style="color: #4285F4;"></i>
+                                Assignment Submission
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 3 -->
+            <div class="course-week">
+                <div class="week-header" onclick="toggleWeek(3)">
+                    <h3>Week 3: Advanced Data Structures</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="week-content" id="week3">
+                    <div class="week-description">
+                        Explore advanced data structures including tuples, sets, and dictionaries.
+                    </div>
+                    
+                    <!-- Lesson 3.1 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson3-1')">
+                            <h4>3.1 Tuples</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson3-1">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 3.2 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson3-2')">
+                            <h4>3.2 Sets</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson3-2">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 3.3 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson3-3')">
+                            <h4>3.3 Dictionaries</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson3-3">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 3 Assignments -->
+                    <div class="week-assignments">
+                        <div class="assignment-title">
+                            <i class="fas fa-tasks"></i>
+                            Week 3 Assignment
+                        </div>
+                        <div class="resource-links">
+                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
+                                <i class="fas fa-download" style="color: #28A745;"></i>
+                                Assignment Download
+                            </a>
+                            <a href="https:/" target="_blank" class="resource-link">
+                                <i class="fas fa-edit" style="color: #4285F4;"></i>
+                                Assignment Submission
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 4 -->
+            <div class="course-week">
+                <div class="week-header" onclick="toggleWeek(4)">
+                    <h3>Week 4: Data Analysis Libraries</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="week-content" id="week4">
+                    <div class="week-description">
+                        Introduction to essential data analysis libraries for Python programming.
+                    </div>
+                    
+                    <!-- Lesson 4.1 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson4-1')">
+                            <h4>4.1 NumPy</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson4-1">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 4.2 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson4-2')">
+                            <h4>4.2 Pandas</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson4-2">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 4 Assignments -->
+                    <div class="week-assignments">
+                        <div class="assignment-title">
+                            <i class="fas fa-tasks"></i>
+                            Week 4 Assignment
+                        </div>
+                        <div class="resource-links">
+                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
+                                <i class="fas fa-download" style="color: #28A745;"></i>
+                                Assignment Download
+                            </a>
+                            <a href="https:/" target="_blank" class="resource-link">
+                                <i class="fas fa-edit" style="color: #4285F4;"></i>
+                                Assignment Submission
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 5 -->
+            <div class="course-week">
+                <div class="week-header" onclick="toggleWeek(5)">
+                    <h3>Week 5: Object-Oriented Programming</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="week-content" id="week5">
+                    <div class="week-description">
+                        Learn object-oriented programming concepts including functions and classes.
+                    </div>
+                    
+                    <!-- Lesson 5.1 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson5-1')">
+                            <h4>5.1 Functions</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson5-1">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson 5.2 -->
+                    <div class="lesson-item">
+                        <div class="lesson-header" onclick="toggleLesson('lesson5-2')">
+                            <h4>5.2 Object and Classes</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="lesson-content" id="lesson5-2">
+                            <div class="lesson-links">
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                    Lecture Video
+                                </a>
+                                <a href="https:/" target="_blank" class="lesson-link">
+                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
+                                    Colab Notebook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 5 Assignments -->
+                    <div class="week-assignments">
+                        <div class="assignment-title">
+                            <i class="fas fa-tasks"></i>
+                            Week 5 Assignment
+                        </div>
+                        <div class="resource-links">
+                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
+                                <i class="fas fa-download" style="color: #28A745;"></i>
+                                Assignment Download
+                            </a>
+                            <a href="https:/" target="_blank" class="resource-link">
+                                <i class="fas fa-edit" style="color: #4285F4;"></i>
+                                Assignment Submission
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial Page -->
+        <div id="tutorial" class="page">
+            <h2 style="text-align: center; color: var(--primary-blue); margin-bottom: 2rem; font-size: 2.5rem;">Website Tutorial</h2>
+
+            <div class="tutorial-section">
+                <h3><i class="fas fa-play"></i> Learning Process</h3>
+                <div class="steps">
+                    <div class="step">
+                        Click <strong>Schedule</strong> to view the course timeline, then select the <strong>Lecture Video</strong> you want to study.
+                    </div>
+                    <div class="step">
+                        After learning, click <strong>Download</strong> to get the assignment and test files, then test your code locally to check correctness.
+                    </div>
+                    <div class="step">
+                        Once tested, click the <strong>Assignment Submission</strong> link for that week's course and upload your Python code (only <strong>.py</strong> files are allowed).
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-section">
+                <h3><i class="fas fa-folder-open"></i> Link Descriptions</h3>
+                <div class="steps">
+                    <div class="step">
+                        <strong>Lecture Video:</strong> Link to the course video.
+                    </div>
+                    <div class="step">
+                        <strong>Colab Notebook:</strong> Link to the course materials.
+                    </div>
+                    <div class="step">
+                        <strong>CAssignment Download:</strong> Downloadable files including assignment instructions, test code, and test data.
+                    </div>
+                    <div class="step">
+                        <strong>Assignment Submission:</strong> Link for submitting assignments.
+                    </div>                                        
+                </div>
+            </div>
+
+            <div class="tutorial-section">
+                <h3><i class="fas fa-tools"></i> Local Testing</h3>
+                <div class="steps">
+                    <div class="step">
+                        Click <strong>Download</strong> to get the zip file <strong>assignment.zip</strong> .
+                    </div>
+                    <div class="step">
+                        Rename your code file to <strong>solution.py</strong> and place it in the same directory as <strong>grader.py</strong> :
+                        <div class="code-block">
+assignment/ <br>
+├── grader.py <br>
+├── solution.py <br>
+└── tests/ <br>
+&nbsp &nbsp   ├── input1.txt <br>
+&nbsp &nbsp   ├── output1.txt <br>
+&nbsp &nbsp   ├── input2.txt <br>
+&nbsp &nbsp   ├── output2.txt</div>
+                    </div>
+                    <div class="step">
+                        Navigate to the folder where <strong>grader.py</strong> is located:
+                        <div class="code-block">cd ~/Desktop/assignment</div>
+                    </div>
+                    <div class="step">
+                        Run the following command:
+                        <div class="code-block">python grader.py</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="about" class="page">
+            <div class="about-content">
+                <h2>About Python Arena</h2>
+                <p>Welcome to Python Arena! This program is established by Academic Department of the 7th NTU DAC to strengthen our members' Python skills.</p>
+                
+                <p>The course spans several weeks, combining video lessons with practice assignments to help you consolidate your foundational knowledge of Python.</p>
+                
+                <p>By the end of the course, we hope that everyone will have developed sufficient Python proficiency to participate in future corporate projects.</p>
+
+                <p>Special thanks to     
+                    <a href="https://linkedin.com/in/imbensonchiu" target="_blank">
+                    Bing-Chen (Benson) Chiu
+                    </a>  
+                    from NTU DAC 6th for creating a significant portion of the course handouts and lecture videos.</p>
+            
+                
+                <div style="margin-top: 2rem;">
+                    <a href="#" onclick="showPage('schedule')" class="cta-button">Start Your Journey</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NTU DAC 7th. All rights reserved. | <a href="mailto:ntu.data.analytics@gmail.com" style="color: var(--white);">Contact Us</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation functionality
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active nav link
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Close mobile menu if open
+            document.getElementById('navLinks').classList.remove('active');
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Week content toggle
+        function toggleWeek(weekNumber) {
+            const content = document.getElementById(`week${weekNumber}`);
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('i');
+            
+            content.classList.toggle('active');
+            
+            if (content.classList.contains('active')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Lesson content toggle
+        function toggleLesson(lessonId) {
+            const content = document.getElementById(lessonId);
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('i');
+            
+            content.classList.toggle('active');
+            
+            if (content.classList.contains('active')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Download functionality
+        function downloadFile(filename) {
+            const link = document.createElement('a');
+            link.href = `materials/${filename}`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('nav');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (!nav.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
