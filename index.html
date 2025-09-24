@@ -1440,7 +1440,7 @@
                     } else {
                         const status = result.passed ? 
                             '<span class="success">✓Passed</span>' : 
-                            '<span class="error">✗ Failed</span>';
+                            '<span class="error">Failed</span>';
                         resultHtml += `Test Case ${result.testNum}: ${status}\n`;
                         if (result.input !== '(no input)') {
                             resultHtml += `  Input: ${result.input.replace(/\n/g, ', ')}\n`;
