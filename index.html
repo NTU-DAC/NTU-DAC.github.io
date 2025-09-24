@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Analytics Club - Course Materials</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>NTU DAC Online Judge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,1169 +14,1601 @@
         }
 
         :root {
-            --primary-orange: #E97239;
-            --primary-blue: #1E4A73;
-            --light-orange: #F5A573;
-            --light-blue: #4A7BA7;
-            --bg-light: #EFEAE6;
-            --text-dark: #2C3E50;
-            --text-light: #6C757D;
-            --white: #EFEAE6;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --primary-color: #1E4A73;
+            --secondary-color: #1E4A73;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --dark-bg: #1a1a2e;
+            --light-bg: #f8f9fa;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, var(--bg-light) 0%, #E8F4FD 100%);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            background-attachment: fixed;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            background: var(--white);
-            box-shadow: var(--shadow);
+        /* Navigation Bar */
+        .navbar {
+            background: #EFEAE6;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
-        nav {
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
+            height: 70px;
         }
 
-        .logo {
+        .nav-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .logo img {
-            height: 50px;
-            width: auto;
+        .nav-logo-img {
+            width: 60px;    
+            height: 60px;   
+            object-fit: contain;  
         }
-
-        .logo-text {
-            font-size: 1.5rem;
+        
+        .nav-logo-fallback {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-weight: bold;
-            color: var(--primary-blue);
+            font-size: 1em;  
         }
 
-        .nav-links {
+        .nav-menu {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 30px;
         }
 
-        .nav-links a {
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
             text-decoration: none;
-            color: var(--text-dark);
+            color: #333;
             font-weight: 500;
-            transition: color 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--primary-orange);
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
         }
 
-        /* Mobile menu */
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
         }
 
-        .mobile-menu span {
-            width: 25px;
-            height: 3px;
-            background: var(--primary-blue);
-            margin: 3px 0;
-            transition: 0.3s;
-        }
-
-        /* Main content */
-        main {
-            min-height: calc(100vh - 120px);
-            padding: 2rem 0;
-        }
-
+        /* Page Container */
         .page {
             display: none;
-            animation: fadeIn 0.5s ease-in-out;
+            min-height: calc(100vh - 70px);
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
         }
 
         .page.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
         }
 
-        /* Home page */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
-            color: var(--white);
-            padding: 4rem 0;
+        /* Home */
+        .hero-section {
             text-align: center;
-            margin-bottom: 3rem;
-            border-radius: 15px;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 20px;
+            margin-bottom: 40px;
         }
 
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
+        .hero-title {
+            font-size: 3em;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.8s ease;
         }
 
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+        .hero-subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease;
         }
 
-        .cta-button {
-            background: var(--primary-orange);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .cta-button:hover {
-            background: var(--light-orange);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(233, 114, 57, 0.3);
-        }
-
-        .features {
+        .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 30px;
+            margin-top: 40px;
         }
 
-        .feature {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--primary-color);
         }
 
-        .feature:hover {
+        .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         }
 
-        .feature i {
-            font-size: 3rem;
-            color: var(--primary-orange);
-            margin-bottom: 1rem;
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: var(--primary-color);
         }
 
-        .feature h3 {
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
+        .feature-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 10px;
         }
 
-        /* Course schedule */
-        .course-week {
-            background: var(--white);
-            margin-bottom: 2rem;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
         }
 
-        .course-week:hover {
-            transform: translateY(-3px);
-        }
-
-        .week-header {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
-            color: var(--white);
-            padding: 1.5rem 2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .week-header h3 {
-            font-size: 1.3rem;
-        }
-
-        .week-content {
-            padding: 2rem;
-            display: none;
-        }
-
-        .week-content.active {
-            display: block;
-        }
-
-        .week-description {
-            margin-bottom: 2rem;
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
-
-        /* Lesson structure */
-        .lesson-item {
-            background: #f0f0f0;
-            margin-bottom: 1rem;
-            border-radius: 8px;
-            border: 1px solid #d1d5db;
-            overflow: hidden;
-        }
-
-        .lesson-header {
-            background: #e5e7eb;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
-
-        .lesson-header:hover {
-            background: #d1d5db;
-        }
-
-        .lesson-header h4 {
-            color: var(--primary-blue);
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .lesson-content {
-            padding: 1.5rem;
-            display: none;
-            background: #E0E0E0;
-        }
-
-        .lesson-content.active {
-            display: block;
-        }
-
-        .lesson-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .lesson-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0.8rem 1rem;
-            background: var(--bg-light);
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--text-dark);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            font-size: 0.95rem;
-        }
-
-        .lesson-link:hover {
-            background: var(--primary-orange);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(233, 114, 57, 0.3);
-        }
-
-        .lesson-link i {
-            font-size: 1.1rem;
-        }
-
-        /* Week assignment section */
-        .week-assignments {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 2px solid #e9ecef;
-        }
-
-        .assignment-title {
-            color: var(--primary-blue);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .resource-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .resource-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 1rem;
-            background: var(--bg-light);
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--text-dark);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .resource-link:hover {
-            background: var(--primary-orange);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(233, 114, 57, 0.3);
-        }
-
-        .resource-link i {
-            font-size: 1.2rem;
-        }
-
-        /* Tutorial page */
-        .tutorial-section {
-            background: var(--white);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-
-        .tutorial-section h3 {
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
-        }
-
-        .code-block {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: 'Courier New', monospace;
-            overflow-x: auto;
-        }
-
-        .step {
-            margin-bottom: 1.5rem;
-            padding-left: 2rem;
+        /* Course Page */
+        .timeline {
             position: relative;
+            padding: 20px 0;
         }
 
-        .step::before {
-            content: counter(step-counter);
-            counter-increment: step-counter;
+        .timeline::before {
+            content: '';
             position: absolute;
-            left: 0;
+            left: 50px;
             top: 0;
-            background: var(--primary-orange);
-            color: var(--white);
-            width: 25px;
-            height: 25px;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .week-section {
+            position: relative;
+            margin-bottom: 50px;
+            padding-left: 80px;
+        }
+
+        .week-marker {
+            position: absolute;
+            left: 35px;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: 4px solid var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
+            color: var(--primary-color);
         }
 
-        .steps {
-            counter-reset: step-counter;
+        .week-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* About page */
-        .about-content {
-            background: var(--white);
-            padding: 3rem;
+        .week-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .unit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .unit-item {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .unit-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .unit-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .unit-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .unit-link:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Problem List Page */
+        .category-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .category-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .category-tab.active {
+            color: var(--primary-color);
+        }
+
+        .category-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .problem-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .problem-card {
+            background: white;
+            padding: 20px;
             border-radius: 12px;
-            box-shadow: var(--shadow);
-            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid var(--primary-color);
         }
 
-        .about-content h2 {
-            color: var(--primary-blue);
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
+        .problem-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .about-content p {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-light);
+        .problem-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .problem-difficulty {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .difficulty-easy {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .difficulty-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .difficulty-hard {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .problem-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .problem-tag {
+            padding: 3px 10px;
+            background: #e3f2fd;
+            color: #1565c0;
+            border-radius: 12px;
+            font-size: 0.85em;
+        }
+
+        /* Code Editor */
+        .code-editor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .code-editor-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-container {
+            background: white;
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .editor-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-title {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .close-editor {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .close-editor:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .editor-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .problem-description {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .test-cases {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        #code-editor {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            background: var(--light-bg);
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        #code-editor:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .editor-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-run:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            background: var(--dark-bg);
+            border-radius: 10px;
+            padding: 20px;
+            color: #f0f0f0;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .success {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .error {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .warning {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        /* About Page */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
             line-height: 1.8;
+            color: #333;
         }
 
-        /* Footer */
-        footer {
-            background: var(--primary-blue);
-            color: var(--white);
+        .about-section {
+            margin-bottom: 40px;
+        }
+
+        .about-title {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 20px;
             text-align: center;
-            padding: 2rem 0;
-            margin-top: 3rem;
         }
 
-        /* Responsive design */
+        .about-subtitle {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+            margin-top: 30px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .about-text {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        /* User Information */
+        .student-info-bar {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 15px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-info-bar input {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .student-info-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .student-info-label {
+            font-weight: 600;
+            color: #333;
+        }
+
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+            .nav-menu {
                 flex-direction: column;
                 position: absolute;
-                top: 100%;
+                top: 70px;
                 left: 0;
+                right: 0;
+                background: white;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .hero-title {
+                font-size: 2em;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .week-section {
+                padding-left: 50px;
+            }
+
+            .week-marker {
+                left: 5px;
+            }
+
+            .editor-container {
                 width: 100%;
-                background: var(--white);
-                box-shadow: var(--shadow);
-                padding: 1rem;
+                height: 100vh;
+                border-radius: 0;
             }
+        }
 
-            .nav-links.active {
-                display: flex;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
+            to {
+                opacity: 1;
+            }
+        }
 
-            .mobile-menu {
-                display: flex;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-            .hero h1 {
-                font-size: 2rem;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-            .features {
-                grid-template-columns: 1fr;
-            }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
 
-            .resource-links {
-                grid-template-columns: 1fr;
-            }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
 
-            .lesson-links {
-                grid-template-columns: 1fr;
-            }
+        /* Pyodide State Indicator */
+        .pyodide-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9em;
+            font-weight: 500;
+            z-index: 999;
+        }
 
-            .week-header {
-                padding: 1rem;
-            }
+        .status-loading {
+            background: var(--warning-color);
+            color: white;
+        }
 
-            .week-content {
-                padding: 1rem;
-            }
+        .status-ready {
+            background: var(--success-color);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="container">
-            <div class="logo">
-                <img src="assets/logo.png" alt="DAC Logo">
-                <div class="logo-text">Python Arena</div>
-            </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#" onclick="showPage('home')" class="active">Home</a></li>
-                <li><a href="#" onclick="showPage('schedule')">Schedule</a></li>
-                <li><a href="#" onclick="showPage('tutorial')">Tutorial</a></li>
-                <li><a href="#" onclick="showPage('about')">About</a></li>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" onclick="showPage(event, 'home')">
+                <img src="assets/logo.png" alt="Python Logo" class="nav-logo-img" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="nav-logo-fallback" style="display:none;">Py</div>
+                NTU DAC Online Judge
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="showPage(event, 'home')">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showPage(event, 'courses')">Course</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showPage(event, 'problems')">Problem</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showPage(event, 'about')">About</a>
+                </li>
             </ul>
-            <div class="mobile-menu" onclick="toggleMobileMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
-    </header>
-
-    <main class="container">
-        <!-- Home Page -->
-        <div id="home" class="page active">
-            <div class="hero">
-                <h1>Welcome to Python Arena</h1>
-                <p>Master your Python skills through this course series and practice assignments</p>
-                <a href="#" onclick="showPage('schedule')" class="cta-button">Start Learning</a>
-            </div>
-            
-            <div class="features">
-                <div class="feature">
-                    <i class="fas fa-video"></i>
-                    <h3>Video Lectures</h3>
-                    <p>Comprehensive video tutorials covering all aspects of Python</p>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-code"></i>
-                    <h3>Interactive Coding</h3>
-                    <p>Practice with Google Colab notebooks and hands-on exercises</p>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-download"></i>
-                    <h3>Course Materials</h3>
-                    <p>Download assignments, test data, and grading scripts</p>
-                </div>
-            </div>
         </div>
+    </nav>
 
-        <!-- Schedule Page -->
-        <div id="schedule" class="page">
-            <h2 style="text-align: center; color: var(--primary-blue); margin-bottom: 2rem; font-size: 2.5rem;">Course Schedule</h2>
-            
-            <!-- Week 1 -->
-            <div class="course-week">
-                <div class="week-header" onclick="toggleWeek(1)">
-                    <h3>Week 1: Introduction to Python</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="week-content" id="week1">
-                    <div class="week-description">
-                        Learn the fundamentals of Python programming including Google Colab, variables, numbers, and strings.
-                    </div>
-                    
-                    <!-- Lesson 1.1 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson1-1')">
-                            <h4>1.1 Introduction to Google Colab + Basic I/O</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson1-1">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 1.2 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson1-2')">
-                            <h4>1.2 Variables Concept</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson1-2">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 1.3 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson1-3')">
-                            <h4>1.3 Numbers</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson1-3">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 1.4 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson1-4')">
-                            <h4>1.4 Strings</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson1-4">
-                            <div class="lesson-links">
-                                <a href="https://youtu.be/oIoXwy9L5Kc?si=O04pNOUbMMbQhw8z" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https://colab.research.google.com/drive/1WpaVDblU0ep-gUBZdeoWXCzp9MiU11PF?usp=sharing" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Week 1 Assignments -->
-                    <div class="week-assignments">
-                        <div class="assignment-title">
-                            <i class="fas fa-tasks"></i>
-                            Week 1 Assignment
-                        </div>
-                        <div class="resource-links">
-                            <a href="#" onclick="downloadFile('test_judge.zip')" class="resource-link">
-                                <i class="fas fa-download" style="color: #28A745;"></i>
-                                Assignment Download
-                            </a>
-                            <a href="https:/" target="_blank" class="resource-link">
-                                <i class="fas fa-edit" style="color: #4285F4;"></i>
-                                Assignment Submission
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Week 2 -->
-            <div class="course-week">
-                <div class="week-header" onclick="toggleWeek(2)">
-                    <h3>Week 2: Basic Control Flow</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="week-content" id="week2">
-                    <div class="week-description">
-                        Master control flow structures including conditionals, loops, and list operations.
-                    </div>
-                    
-                    <!-- Lesson 2.1 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson2-1')">
-                            <h4>2.1 Conditionals: if-elif-else</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson2-1">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 2.2 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson2-2')">
-                            <h4>2.2 Loops: while and for</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson2-2">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 2.3 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson2-3')">
-                            <h4>2.3 Lists</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson2-3">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Week 2 Assignments -->
-                    <div class="week-assignments">
-                        <div class="assignment-title">
-                            <i class="fas fa-tasks"></i>
-                            Week 2 Assignment
-                        </div>
-                        <div class="resource-links">
-                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
-                                <i class="fas fa-download" style="color: #28A745;"></i>
-                                Assignment Download
-                            </a>
-                            <a href="https:/" target="_blank" class="resource-link">
-                                <i class="fas fa-edit" style="color: #4285F4;"></i>
-                                Assignment Submission
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Week 3 -->
-            <div class="course-week">
-                <div class="week-header" onclick="toggleWeek(3)">
-                    <h3>Week 3: Advanced Data Structures</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="week-content" id="week3">
-                    <div class="week-description">
-                        Explore advanced data structures including tuples, sets, and dictionaries.
-                    </div>
-                    
-                    <!-- Lesson 3.1 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson3-1')">
-                            <h4>3.1 Tuples</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson3-1">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 3.2 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson3-2')">
-                            <h4>3.2 Sets</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson3-2">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 3.3 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson3-3')">
-                            <h4>3.3 Dictionaries</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson3-3">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Week 3 Assignments -->
-                    <div class="week-assignments">
-                        <div class="assignment-title">
-                            <i class="fas fa-tasks"></i>
-                            Week 3 Assignment
-                        </div>
-                        <div class="resource-links">
-                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
-                                <i class="fas fa-download" style="color: #28A745;"></i>
-                                Assignment Download
-                            </a>
-                            <a href="https:/" target="_blank" class="resource-link">
-                                <i class="fas fa-edit" style="color: #4285F4;"></i>
-                                Assignment Submission
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Week 4 -->
-            <div class="course-week">
-                <div class="week-header" onclick="toggleWeek(4)">
-                    <h3>Week 4: Data Analysis Libraries</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="week-content" id="week4">
-                    <div class="week-description">
-                        Introduction to essential data analysis libraries for Python programming.
-                    </div>
-                    
-                    <!-- Lesson 4.1 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson4-1')">
-                            <h4>4.1 NumPy</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson4-1">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 4.2 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson4-2')">
-                            <h4>4.2 Pandas</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson4-2">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Week 4 Assignments -->
-                    <div class="week-assignments">
-                        <div class="assignment-title">
-                            <i class="fas fa-tasks"></i>
-                            Week 4 Assignment
-                        </div>
-                        <div class="resource-links">
-                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
-                                <i class="fas fa-download" style="color: #28A745;"></i>
-                                Assignment Download
-                            </a>
-                            <a href="https:/" target="_blank" class="resource-link">
-                                <i class="fas fa-edit" style="color: #4285F4;"></i>
-                                Assignment Submission
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Week 5 -->
-            <div class="course-week">
-                <div class="week-header" onclick="toggleWeek(5)">
-                    <h3>Week 5: Object-Oriented Programming</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="week-content" id="week5">
-                    <div class="week-description">
-                        Learn object-oriented programming concepts including functions and classes.
-                    </div>
-                    
-                    <!-- Lesson 5.1 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson5-1')">
-                            <h4>5.1 Functions</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson5-1">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lesson 5.2 -->
-                    <div class="lesson-item">
-                        <div class="lesson-header" onclick="toggleLesson('lesson5-2')">
-                            <h4>5.2 Object and Classes</h4>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="lesson-content" id="lesson5-2">
-                            <div class="lesson-links">
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fab fa-youtube" style="color: #FF0000;"></i>
-                                    Lecture Video
-                                </a>
-                                <a href="https:/" target="_blank" class="lesson-link">
-                                    <i class="fas fa-laptop-code" style="color: #F9AB00;"></i>
-                                    Colab Notebook
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Week 5 Assignments -->
-                    <div class="week-assignments">
-                        <div class="assignment-title">
-                            <i class="fas fa-tasks"></i>
-                            Week 5 Assignment
-                        </div>
-                        <div class="resource-links">
-                            <a href="#" onclick="downloadFile('.zip')" class="resource-link">
-                                <i class="fas fa-download" style="color: #28A745;"></i>
-                                Assignment Download
-                            </a>
-                            <a href="https:/" target="_blank" class="resource-link">
-                                <i class="fas fa-edit" style="color: #4285F4;"></i>
-                                Assignment Submission
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tutorial Page -->
-        <div id="tutorial" class="page">
-            <h2 style="text-align: center; color: var(--primary-blue); margin-bottom: 2rem; font-size: 2.5rem;">Website Tutorial</h2>
-
-            <div class="tutorial-section">
-                <h3><i class="fas fa-play"></i> Learning Process</h3>
-                <div class="steps">
-                    <div class="step">
-                        Click <strong>Schedule</strong> to view the course timeline, then select the <strong>Lecture Video</strong> you want to study.
-                    </div>
-                    <div class="step">
-                        After learning, click <strong>Download</strong> to get the assignment and test files, then test your code locally to check correctness.
-                    </div>
-                    <div class="step">
-                        Once tested, click the <strong>Assignment Submission</strong> link for that week's course and upload your Python code (only <strong>.py</strong> files are allowed).
-                    </div>
-                </div>
-            </div>
-
-            <div class="tutorial-section">
-                <h3><i class="fas fa-folder-open"></i> Link Descriptions</h3>
-                <div class="steps">
-                    <div class="step">
-                        <strong>Lecture Video:</strong> Link to the course video.
-                    </div>
-                    <div class="step">
-                        <strong>Colab Notebook:</strong> Link to the course materials.
-                    </div>
-                    <div class="step">
-                        <strong>CAssignment Download:</strong> Downloadable files including assignment instructions, test code, and test data.
-                    </div>
-                    <div class="step">
-                        <strong>Assignment Submission:</strong> Link for submitting assignments.
-                    </div>                                        
-                </div>
-            </div>
-
-            <div class="tutorial-section">
-                <h3><i class="fas fa-tools"></i> Local Testing</h3>
-                <div class="steps">
-                    <div class="step">
-                        Click <strong>Download</strong> to get the zip file <strong>assignment.zip</strong> .
-                    </div>
-                    <div class="step">
-                        Rename your code file to <strong>solution.py</strong> and place it in the same directory as <strong>grader.py</strong> :
-                        <div class="code-block">
-assignment/ <br>
-├── grader.py <br>
-├── solution.py <br>
-└── tests/ <br>
-&nbsp &nbsp   ├── input1.txt <br>
-&nbsp &nbsp   ├── output1.txt <br>
-&nbsp &nbsp   ├── input2.txt <br>
-&nbsp &nbsp   ├── output2.txt</div>
-                    </div>
-                    <div class="step">
-                        Navigate to the folder where <strong>grader.py</strong> is located:
-                        <div class="code-block">cd ~/Desktop/assignment</div>
-                    </div>
-                    <div class="step">
-                        Run the following command:
-                        <div class="code-block">python grader.py</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- About Page -->
-        <div id="about" class="page">
-            <div class="about-content">
-                <h2>About Python Arena</h2>
-                <p>Welcome to Python Arena! This program is established by Academic Department of the 7th NTU DAC to strengthen our members' Python skills.</p>
-                
-                <p>The course spans several weeks, combining video lessons with practice assignments to help you consolidate your foundational knowledge of Python.</p>
-                
-                <p>By the end of the course, we hope that everyone will have developed sufficient Python proficiency to participate in future corporate projects.</p>
-
-                <p>Special thanks to     
-                    <a href="https://linkedin.com/in/imbensonchiu" target="_blank">
-                    Bing-Chen (Benson) Chiu
-                    </a>  
-                    from NTU DAC 6th for creating a significant portion of the course handouts and lecture videos.</p>
-            
-                
-                <div style="margin-top: 2rem;">
-                    <a href="#" onclick="showPage('schedule')" class="cta-button">Start Your Journey</a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer>
+    <!-- Home -->
+    <div id="home-page" class="page active">
         <div class="container">
-            <p>&copy; 2025 NTU DAC 7th. All rights reserved. | <a href="mailto:ntu.data.analytics@gmail.com" style="color: var(--white);">Contact Us</a></p>
+            <div class="hero-section">
+                <h1 class="hero-title">Welcome to NTU DAC Online Judge</h1>
+                <p class="hero-subtitle">Beginner to Pro: Learn Python Step by Step</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-book"></i></div>
+                    <h3 class="feature-title">Structured Courses</h3>
+                    <p class="feature-description">A complete 5-week program, from basics to advanced, with weekly video lessons and hands-on exercises.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
+                    <h3 class="feature-title">Online Code Editor</h3>
+                    <p class="feature-description">Built-in editor, no installation required. Write and run Python code directly in your browser.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3 class="feature-title">Instant Testing System</h3>
+                    <p class="feature-description">Automatic judging with real-time feedback, including both public and hidden test cases.</p>
+                </div>
+            </div>
         </div>
-    </footer>
+    </div>
+
+    <!-- Course Page-->
+    <div id="courses-page" class="page">
+        <div class="container">
+            <h1 style="text-align: center; margin-bottom: 40px; color: #333;">Course Timeline</h1>
+            
+            <div class="timeline">
+                <!-- 1th Week -->
+                <div class="week-section">
+                    <div class="week-marker">1</div>
+                    <div class="week-content">
+                        <h2 class="week-title">
+                            <span>Week 1: Introduction to Python</span>
+                        </h2>
+                        <div class="unit-list">
+                            <div class="unit-item">
+                                <div class="unit-title">1.1 Basic I/O</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/uX6qIg9v7V8?si=L2OcyZsZ0AJXOYd4" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://colab.research.google.com/drive/19TLluPH2jk2KqiiNSiwr1MjlBLOnBX7D?usp=sharing" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="unit-item">
+                                <div class="unit-title">1.2 Variables Concept</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/uBRiDTXhkWE?si=CeCp3oyYmhj38soC" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://colab.research.google.com/drive/19TLluPH2jk2KqiiNSiwr1MjlBLOnBX7D?usp=sharing" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="unit-item">
+                                <div class="unit-title">1.3 Numbers</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/dVqpyBag7Vo?si=wAtYurvbjBrRl3CS" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://colab.research.google.com/drive/19TLluPH2jk2KqiiNSiwr1MjlBLOnBX7D?usp=sharing" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="unit-item">
+                                <div class="unit-title">1.4 Strings</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/oIoXwy9L5Kc?si=zWMsDl34_VYX83O7" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://colab.research.google.com/drive/1WpaVDblU0ep-gUBZdeoWXCzp9MiU11PF?usp=sharing" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2th Week -->
+                <div class="week-section">
+                    <div class="week-marker">2</div>
+                    <div class="week-content">
+                        <h2 class="week-title">
+                            <span>Week 2: Basic Control Flow</span>
+                        </h2>
+                        <div class="unit-list">
+                            <div class="unit-item">
+                                <div class="unit-title">2.1 Conditionals: if-elif-else</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/g1KFaO5Euq8?si=sz3241ruRRMdlED1" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://colab.research.google.com/drive/1Jw-smtV9w5GDyhXKlGF0XeWcLqxWej-e?usp=sharing" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="unit-item">
+                                <div class="unit-title">2.2 Loops: while and for</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/hjk2Pswfym0?si=VgskPwnh74jXfd09" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://colab.research.google.com/drive/1Jw-smtV9w5GDyhXKlGF0XeWcLqxWej-e?usp=sharing" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="unit-item">
+                                <div class="unit-title">2.3 Lists</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/E-ge0mO2jtk?si=cofsESVYVauktMwV" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://drive.google.com/open?id=1bVmBuuyoSZSf3wQavx1izyyAQOS2SV49&usp=drive_copy" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3th Week -->
+                <div class="week-section">
+                    <div class="week-marker">3</div>
+                    <div class="week-content">
+                        <h2 class="week-title">
+                            <span>Week 3: Advanced Data Structures</span>
+                        </h2>
+                        <div class="unit-list">
+                            <div class="unit-item">
+                                <div class="unit-title">3.1 Tuple/Set/Dictionary</div>
+                                <div class="unit-links">
+                                    <a href="https://youtu.be/HVgnP3-N5Ig?si=tbURhEwTFNUoYV_x" target="_blank" class="unit-link">
+                                        ▶️ YouTube Link
+                                    </a>
+                                    <a href="https://drive.google.com/open?id=1ubny_Go6BvyaCmB5eq1SHTo_4kIZcaBs&usp=drive_copy" target="_blank" class="unit-link">
+                                        📓 Colab Link
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Problem List Page -->
+    <div id="problems-page" class="page">
+        <div class="container">
+            <h1 style="text-align: center; margin-bottom: 40px; color: #333;">Problem Set</h1>
+            
+            <div class="category-tabs">
+                <button class="category-tab active" onclick="showCategory(event, 'arena')">Course Assignments</button>
+                <button class="category-tab" onclick="showCategory(event, 'competition')">Competition Problems</button>
+                <button class="category-tab" onclick="showCategory(event, 'uncategorized')">Uncategorized Problems</button>
+            </div>
+
+            <!-- Course Assignments -->
+            <div id="arena-problems" class="problem-list">
+                <div class="problem-card" onclick="openProblem('arena1')">
+                    <h3 class="problem-title">A1: Print Hello World</h3>
+                    <span class="problem-difficulty difficulty-easy">Easy</span>
+                </div>
+                <div class="problem-card" onclick="openProblem('arena2')">
+                    <h3 class="problem-title">A2: Sum of Numbers</h3>
+                    <span class="problem-difficulty difficulty-easy">Easy</span>
+                </div>
+            </div>
+
+            <!-- Competition Problems -->
+            <div id="competition-problems" class="problem-list" style="display: none;">
+                <div class="problem-card" onclick="openProblem('comp1')">
+                    <h3 class="problem-title">C1: Prime Number Check</h3>
+                    <span class="problem-difficulty difficulty-medium">Medium</span>
+                </div>
+                <div class="problem-card" onclick="openProblem('comp2')">
+                    <h3 class="problem-title">C2: Reverse String</h3>
+                    <span class="problem-difficulty difficulty-medium">Medium</span>
+                </div>
+            </div>
+
+            <!-- Uncategorized Problems -->
+            <div id="uncategorized-problems" class="problem-list" style="display: none;">
+                <div class="problem-card" onclick="openProblem('misc1')">
+                    <h3 class="problem-title">M1: Palindrome Check</h3>
+                    <span class="problem-difficulty difficulty-hard">Hard</span>
+                </div>
+                <div class="problem-card" onclick="openProblem('misc2')">
+                    <h3 class="problem-title">M2: Factorial Calculation</h3>
+                    <span class="problem-difficulty difficulty-hard">Hard</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Page -->
+    <div id="about-page" class="page">
+        <div class="container">
+            <div class="about-content">
+                <h1 class="about-title">About Us</h1>
+                
+                <div class="about-section">
+                    <p class="about-text">
+                        This is the Python practice platform of NTU DAC (National Taiwan University Data Analytics Club).  
+                        Contributors include:  
+                        <br><br>
+                        Website Author:  
+                        <br>&nbsp;&nbsp;Hubert Huang (NTU BA)  
+                        <br><br>
+                        Course and Assignment Authors:  
+                        <br>&nbsp;&nbsp;Benson Chiu (NTU IM)  
+                        <br>&nbsp;&nbsp;Hugh Yib (NTU IB)
+                        <br>&nbsp;&nbsp;Hubert Huang (NTU BA)
+                        <br>&nbsp;&nbsp;Sabina Lu (NTU ACCT)
+                        <br>&nbsp;&nbsp;Rita Sheng (NTU STAT)  
+                        <br><br>
+                        If you would like to use the resources of this website, please contact  
+                        <a href="mailto:ntu.data.analytics@gmail.com">ntu.data.analytics@gmail.com</a>  
+                        and indicate the source. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Editor Modal Window -->
+    <div id="code-editor-modal" class="code-editor-modal">
+        <div class="editor-container">
+            <div class="editor-header">
+                <span class="editor-title" id="editor-title">Problem Title</span>
+                <button class="close-editor" onclick="closeEditor()">✕ Close</button>
+            </div>
+            <div class="editor-body">
+                <div class="problem-description">
+                    <h3>Problem Description</h3>
+                    <p id="problem-text"></p>
+                    <div class="test-cases" id="test-cases"></div>
+                </div>
+                
+                <label for="code-editor" style="font-weight: 600; margin-bottom: 10px; display: block;">
+                    Code Editor Area:
+                </label>
+                <textarea id="code-editor" placeholder="Enter your Python code here..."></textarea>
+                
+                <div class="editor-controls">
+                    <button class="btn btn-run" id="run-btn" onclick="runCode()">
+                        Run
+                    </button>
+                    <button class="btn btn-submit" id="submit-btn" onclick="submitCode()">
+                        Submit
+                    </button>
+                </div>
+
+                <div class="progress-bar" id="progress-bar" style="display: none;">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+
+                <div class="output-section" id="output">
+                    Waiting for Execution...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="student-info-bar">
+        <span class="student-info-label">User Name:</span>
+        <input type="text" id="student-name" placeholder="Enter your name">
+    </div>
+
+    <!-- Pyodide State Indicator -->
+    <div id="pyodide-status" class="pyodide-status status-loading">
+        Loading Python Environment...
+    </div>
 
     <script>
-        // Navigation functionality
-        function showPage(pageId) {
-            // Hide all pages
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => {
+        // Problem Database
+        const problems = {
+            // Course Assignments
+            arena1: {
+                id: 'arena1',
+                title: "A1: Print Hello World",
+                description: "Write a program that outputs the string 'Hello, World!'.",
+                publicTestCases: [
+                    { input: "", expected: "Hello, World!" }
+                ],
+                hiddenTestCases: [],
+                template: "",
+                hasHiddenTests: false
+            },
+            arena2: {
+                id: 'arena2',
+                title: "A2: Sum of Numbers",
+                description: "Write a program that reads two integers and outputs their sum.",
+                publicTestCases: [
+                    { input: "3\n5", expected: "8" },
+                    { input: "10\n20", expected: "30" }
+                ],
+                hiddenTestCases: [
+                    { input: "-5\n5", expected: "0" },
+                    { input: "999999\n1", expected: "1000000" },
+                    { input: "-100\n-200", expected: "-300" }
+                ],
+                template: "",
+                hasHiddenTests: true
+            },
+            // Competition Problems
+            comp1: {
+                id: 'comp1',
+                title: "C1: Prime Number Check",
+                description: "Write a program that reads a positive integer and determines whether it is a prime number. If it is prime, output 'Prime'; otherwise, output 'Not Prime'",
+                publicTestCases: [
+                    { input: "2", expected: "Prime" },
+                    { input: "4", expected: "Not Prime" },
+                    { input: "17", expected: "Prime" }
+                ],
+                hiddenTestCases: [
+                    { input: "1", expected: "Not Prime" },
+                    { input: "97", expected: "Prime" },
+                    { input: "100", expected: "Not Prime" }
+                ],
+                template: "",
+                hasHiddenTests: true
+            },
+            comp2: {
+                id: 'comp2',
+                title: "C2: Reverse String",
+                description: "Write a program that reads a string and outputs the reversed string.",
+                publicTestCases: [
+                    { input: "hello", expected: "olleh" },
+                    { input: "Python", expected: "nohtyP" }
+                ],
+                hiddenTestCases: [
+                    { input: "12345", expected: "54321" },
+                    { input: "a", expected: "a" }
+                ],
+                template: "",
+                hasHiddenTests: true
+            },
+            // Uncategorized Problems
+            misc1: {
+                id: 'misc1',
+                title: "M1: Palindrome Check",
+                description: "Write a program that reads a string and determines whether it is a palindrome (the same when read forwards and backwards). If it is, output 'Yes'; otherwise, output 'No'.",
+                publicTestCases: [
+                    { input: "level", expected: "Yes" },
+                    { input: "hello", expected: "No" }
+                ],
+                hiddenTestCases: [
+                    { input: "racecar", expected: "Yes" },
+                    { input: "12321", expected: "Yes" }
+                ],
+                template: "",
+                hasHiddenTests: true
+            },
+            misc2: {
+                id: 'misc2',
+                title: "M2: Factorial Calculation",
+                description: "Write a program that reads a non-negative integer n and outputs the factorial of n.",
+                publicTestCases: [
+                    { input: "5", expected: "120" },
+                    { input: "0", expected: "1" }
+                ],
+                hiddenTestCases: [
+                    { input: "10", expected: "3628800" },
+                    { input: "1", expected: "1" }
+                ],
+                template: "",
+                hasHiddenTests: true
+            }
+        };
+
+        // Google Form Settings
+        const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfyrzuKPxOqT9dn2FBSWGXJ7kw8y3KD57j1F35wPaSoOA1O-w/formResponse';
+        const ENTRY_NAME = 'entry.498172862';
+        const ENTRY_PROBLEM = 'entry.2067718239';
+        const ENTRY_CODE = 'entry.1618746730';
+        const ENTRY_RESULT = 'entry.58630826';
+        const ENTRY_ACCURACY = 'entry.574605597';
+
+        // Global Variables
+        let pyodide;
+        let currentProblem = null;
+        let testPassed = false;
+        let isRunning = false;
+        let testAccuracy = 0;
+        const TIMEOUT_LIMIT = 10000;
+
+        // Page Switch
+        function showPage(event, pageName) {
+            document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
+            document.getElementById(`${pageName}-page`).classList.add('active');
             
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
-            
-            // Update active nav link
-            const navLinks = document.querySelectorAll('.nav-links a');
-            navLinks.forEach(link => {
+            document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
             event.target.classList.add('active');
-            
-            // Close mobile menu if open
-            document.getElementById('navLinks').classList.remove('active');
         }
 
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
+        // Problem Category Switch
+        function showCategory(event, category) {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.getElementById('arena-problems').style.display = category === 'arena' ? 'grid' : 'none';
+            document.getElementById('competition-problems').style.display = category === 'competition' ? 'grid' : 'none';
+            document.getElementById('uncategorized-problems').style.display = category === 'uncategorized' ? 'grid' : 'none';
         }
 
-        // Week content toggle
-        function toggleWeek(weekNumber) {
-            const content = document.getElementById(`week${weekNumber}`);
-            const header = content.previousElementSibling;
-            const icon = header.querySelector('i');
+        // Open Problem
+        function openProblem(problemId) {
+            const problem = problems[problemId];
+            if (!problem) {
+                alert('Problem does not exist!');
+                return;
+            }
             
-            content.classList.toggle('active');
+            currentProblem = problem;
             
-            if (content.classList.contains('active')) {
-                icon.style.transform = 'rotate(180deg)';
+            document.getElementById('editor-title').textContent = problem.title;
+            document.getElementById('problem-text').textContent = problem.description;
+            
+            let testCasesHtml = '<strong>Public Test Cases:</strong><br>';
+            problem.publicTestCases.forEach((tc, index) => {
+                testCasesHtml += `<div style="margin: 10px 0;">`;
+                testCasesHtml += `Test Case ${index + 1}:<br>`;
+                if (tc.input) {
+                    testCasesHtml += `Input: <code>${tc.input.replace(/\n/g, ', ')}</code><br>`;
+                } else {
+                    testCasesHtml += `Input: (no input)<br>`;
+                }
+                testCasesHtml += `Expected Output: <code>${tc.expected}</code><br>`;
+                testCasesHtml += `</div>`;
+            });
+            
+            if (problem.hasHiddenTests) {
+                testCasesHtml += '<br><em style="color: #ff9800;">This problem contains hidden test cases</em>';
+            }
+            
+            document.getElementById('test-cases').innerHTML = testCasesHtml;
+            document.getElementById('code-editor').value = problem.template;
+            document.getElementById('output').textContent = 'Waiting for execution...';
+            document.getElementById('code-editor-modal').classList.add('active');
+            
+            testPassed = false;
+            testAccuracy = 0;
+            updateSubmitButton();
+        }
+
+        // Close Editor
+        function closeEditor() {
+            document.getElementById('code-editor-modal').classList.remove('active');
+            currentProblem = null;
+            testPassed = false;
+            testAccuracy = 0;
+        }
+
+        // Initialize Pyodide
+        async function initPyodide() {
+            const statusEl = document.getElementById('pyodide-status');
+            statusEl.textContent = 'Loading Python environment...';
+            
+            try {
+                pyodide = await loadPyodide();
+                statusEl.textContent = 'Python environment ready';
+                statusEl.className = 'pyodide-status status-ready';
+                console.log('Pyodide Loaded');
+            } catch (error) {
+                statusEl.textContent = 'Load Failed';
+                statusEl.style.background = '#f44336';
+                console.error('Pyodide Load Failed:', error);
+                alert('Python environment failed to load. Please refresh the page.');
+            }
+        }
+
+        // Run Code
+        async function runCodeWithTimeout(code, testCase) {
+            return new Promise(async (resolve, reject) => {
+                let timeoutId;
+                let cancelled = false;
+
+                timeoutId = setTimeout(() => {
+                    cancelled = true;
+                    reject(new Error(`Runtime Timeout (>${TIMEOUT_LIMIT/1000}s)`));
+                }, TIMEOUT_LIMIT);
+
+                try {
+                    const inputData = testCase.input ? testCase.input.split('\n') : [];
+                    let inputIndex = 0;
+                    
+                    pyodide.globals.set('input', () => {
+                        if (cancelled) throw new Error('Execution cancelled due to timeout');
+                        if (inputIndex < inputData.length) {
+                            return inputData[inputIndex++];
+                        }
+                        throw new Error('No more input available');
+                    });
+                    
+                    let output = '';
+                    pyodide.globals.set('print', (...args) => {
+                        if (cancelled) throw new Error('Execution cancelled due to timeout');
+                        output += args.join(' ') + '\n';
+                    });
+                    
+                    await pyodide.runPythonAsync(code);
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!cancelled) {
+                        resolve(output.trim());
+                    }
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    if (cancelled) {
+                        reject(new Error(`Runtime Timeout (>${TIMEOUT_LIMIT/1000}s)`));
+                    } else {
+                        reject(error);
+                    }
+                }
+            });
+        }
+
+        // Run Tests
+        async function runCode() {
+            if (isRunning) {
+                alert('Program is currently running, please wait...');
+                return;
+            }
+
+            if (!pyodide) {
+                alert('Python environment has not finished loading, please wait...');
+                return;
+            }
+
+            if (!currentProblem) {
+                alert('Please select a problem first!');
+                return;
+            }
+
+            const code = document.getElementById('code-editor').value;
+            const outputEl = document.getElementById('output');
+            const runBtn = document.getElementById('run-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const progressFill = document.getElementById('progress-fill');
+            
+            if (!code.trim()) {
+                outputEl.innerHTML = '<span class="error">Please enter your code!</span>';
+                return;
+            }
+
+            isRunning = true;
+            runBtn.disabled = true;
+            runBtn.textContent = 'Running...';
+            progressBar.style.display = 'block';
+            
+            outputEl.textContent = 'Running...';
+            
+            const allTestCases = [
+                ...currentProblem.publicTestCases,
+                ...currentProblem.hiddenTestCases
+            ];
+            
+            let allPassed = true;
+            let results = [];
+            let publicPassed = 0;
+            let publicTotal = currentProblem.publicTestCases.length;
+            let hiddenPassed = 0;
+            let hiddenTotal = currentProblem.hiddenTestCases.length;
+            let totalPassed = 0;
+            let totalTests = allTestCases.length;
+
+            try {
+                for (let i = 0; i < allTestCases.length; i++) {
+                    const testCase = allTestCases[i];
+                    const isHidden = i >= currentProblem.publicTestCases.length;
+                    
+                    progressFill.style.width = `${((i + 1) / allTestCases.length) * 100}%`;
+                    
+                    try {
+                        const actualOutput = await runCodeWithTimeout(code, testCase);
+                        const passed = actualOutput === testCase.expected;
+                        
+                        results.push({
+                            testNum: isHidden ? i - currentProblem.publicTestCases.length + 1 : i + 1,
+                            input: testCase.input || '(no input)',
+                            expected: testCase.expected,
+                            actual: actualOutput,
+                            passed: passed,
+                            isHidden: isHidden,
+                            error: null
+                        });
+                        
+                        if (passed) {
+                            totalPassed++;
+                            if (isHidden) hiddenPassed++;
+                            else publicPassed++;
+                        } else {
+                            allPassed = false;
+                        }
+                    } catch (error) {
+                        results.push({
+                            testNum: isHidden ? i - currentProblem.publicTestCases.length + 1 : i + 1,
+                            input: testCase.input || '(no input)',
+                            expected: testCase.expected,
+                            actual: '',
+                            passed: false,
+                            isHidden: isHidden,
+                            error: error.message
+                        });
+                        allPassed = false;
+                    }
+                }
+                
+                // Calculate Accuracy
+                testAccuracy = Math.round((totalPassed / totalTests) * 100);
+                
+                let resultHtml = '';
+                resultHtml += `Test Results Summary:\n`;
+                resultHtml += `Public Test Cases: ${publicPassed}/${publicTotal} passed\n`;
+                if (hiddenTotal > 0) {
+                    resultHtml += `Hidden Test Cases: ${hiddenPassed}/${hiddenTotal} passed\n`;
+                }
+                resultHtml += `Overall Accuracy: ${testAccuracy}%\n`;
+                resultHtml += `\n`;
+                
+                resultHtml += `Public Test Case Results:\n`;
+                results.filter(r => !r.isHidden).forEach(result => {
+                    if (result.error) {
+                        resultHtml += `Test Case ${result.testNum}: <span class="error">Runtime Error</span>\n`;
+                        resultHtml += `  Error Message: ${result.error}\n`;
+                    } else {
+                        const status = result.passed ? 
+                            '<span class="success">✓Passed</span>' : 
+                            '<span class="error">✗ Failed</span>';
+                        resultHtml += `Test Case ${result.testNum}: ${status}\n`;
+                        if (result.input !== '(no input)') {
+                            resultHtml += `  Input: ${result.input.replace(/\n/g, ', ')}\n`;
+                        }
+                        resultHtml += `  Expected Output: ${result.expected}\n`;
+                        resultHtml += `  Actual Output: ${result.actual}\n`;
+                    }
+                    resultHtml += `\n`;
+                });
+                
+                if (hiddenTotal > 0) {
+                    resultHtml += `\nHidden Test Case Results:\n`;
+                    results.filter(r => r.isHidden).forEach(result => {
+                        if (result.error) {
+                            resultHtml += `Hidden Test ${result.testNum}: <span class="error">Runtime Error</span>\n`;
+                        } else {
+                            const status = result.passed ? 
+                                '<span class="success">Passed</span>' : 
+                                '<span class="error">Failed</span>';
+                            resultHtml += `Hidden Test ${result.testNum}: ${status}\n`;
+                        }
+                    });
+                }
+                
+                if (allPassed) {
+                    resultHtml = '<span class="success">Congratulations! All test cases passed!</span>\n\n' + resultHtml;
+                    testPassed = true;
+                } else {
+                    resultHtml = '<span class="warning">Some test cases failed</span>\n\n' + resultHtml;
+                    testPassed = false;
+                }
+                
+                outputEl.innerHTML = resultHtml;
+                
+            } catch (error) {
+                outputEl.innerHTML = `<span class="error">Runtime Error: \n${error.toString()}</span>`;
+                testPassed = false;
+                testAccuracy = 0;
+            } finally {
+                isRunning = false;
+                runBtn.disabled = false;
+                runBtn.textContent = 'Run Tests';
+                progressBar.style.display = 'none';
+                progressFill.style.width = '0%';
+                updateSubmitButton();
+            }
+        }
+
+        // Update Submit Button State
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            const name = document.getElementById('student-name').value.trim();
+            const code = document.getElementById('code-editor').value.trim();
+            
+            if (name && currentProblem && code) {
+                submitBtn.disabled = false;
+                if (!testPassed) {
+                    submitBtn.textContent = 'Submit Answer';
+                    submitBtn.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                } else {
+                    submitBtn.textContent = 'Submit Answer';
+                    submitBtn.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
+                }
             } else {
-                icon.style.transform = 'rotate(0deg)';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submit Answer';
             }
         }
 
-        // Lesson content toggle
-        function toggleLesson(lessonId) {
-            const content = document.getElementById(lessonId);
-            const header = content.previousElementSibling;
-            const icon = header.querySelector('i');
-            
-            content.classList.toggle('active');
-            
-            if (content.classList.contains('active')) {
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                icon.style.transform = 'rotate(0deg)';
+
+        async function submitCode() {
+            const name = document.getElementById('student-name').value.trim();
+
+            let code = document.getElementById('code-editor').value;
+            code = code.replace(/ /g, "_");
+
+            if (!name || !currentProblem || !code.trim()) {
+                alert('Please confirm your name and enter your code');
+                return;
             }
+
+            let testResult = testPassed ? 'All tests passed' : 'Tests not executed or failed';
+            let accuracyText = `${testAccuracy}%`;
+
+            const confirmMessage = testPassed ? 
+                `Your code has passed all tests (Accuracy: ${testAccuracy}%). Do you want to submit?` :
+                `Your code has not passed all tests (Accuracy: ${testAccuracy}%). Do you want to submit?`;
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            const fields = [
+                { name: ENTRY_NAME, value: name },
+                { name: ENTRY_PROBLEM, value: currentProblem.title },
+                { name: ENTRY_CODE, value: code },   
+                { name: ENTRY_RESULT, value: testResult },
+                { name: ENTRY_ACCURACY, value: accuracyText }
+            ];
+
+            const form = document.createElement('form');
+            form.action = GOOGLE_FORM_ACTION;
+            form.method = 'POST';
+            form.target = 'google-form-iframe';
+
+            fields.forEach(field => {
+                if (field.name === ENTRY_CODE) {
+                    const textarea = document.createElement('textarea');
+                    textarea.name = field.name;
+                    textarea.value = field.value;
+                    form.appendChild(textarea);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = field.name;
+                    input.value = field.value;
+                    form.appendChild(input);
+                }
+            });
+
+            let iframe = document.getElementById("google-form-iframe");
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.name = 'google-form-iframe';
+                iframe.id = 'google-form-iframe';
+                document.body.appendChild(iframe);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            const successMessage = testPassed ? 
+                `Answer submitted (Accuracy: ${testAccuracy}%)` :
+                `Answer submitted (Accuracy: ${testAccuracy}%)`;
+            
+            alert(successMessage);
         }
 
-        // Download functionality
-        function downloadFile(filename) {
-            // List of available files
-            const availableFiles = [
-                'test_judge.zip'
-            ]
-            if (availableFiles.includes(filename)){
-                const link = document.createElement('a');
-                link.href = `materials/${filename}`;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-            else{
-                alert('This assignment is not yet available. Please check back later.');
-            }
-        }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const nav = document.querySelector('nav');
-            const navLinks = document.getElementById('navLinks');
-            
-            if (!nav.contains(event.target)) {
-                navLinks.classList.remove('active');
+        document.getElementById('student-name').addEventListener('input', updateSubmitButton);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEditor();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                if (currentProblem && !isRunning) {
+                    runCode();
+                }
             }
         });
 
-        // Smooth scrolling for better UX
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
+        window.addEventListener('load', initPyodide);
+
+        // Prevent Accidental Page Leave
+        window.addEventListener('beforeunload', function(e) {
+            if (currentProblem) {
+                let code = document.getElementById('code-editor').value;
+                code = code.replace(/ /g, "_");
+                
+                if (code && code.trim() !== '' && code !== currentProblem.template) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved code, are you sure you want to leave?';
                 }
-            });
+            }
         });
     </script>
 </body>
