@@ -50,6 +50,7 @@
             justify-content: space-between;
             align-items: center;
             height: 70px;
+            position: relative;
         }
 
         .nav-brand {
@@ -649,22 +650,45 @@
             font-weight: 600;
             color: #333;
         }
+    
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 8px;
+        }
 
         @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+
             .nav-menu {
                 flex-direction: column;
                 position: absolute;
                 top: 70px;
                 left: 0;
                 right: 0;
-                background: white;
-                padding: 20px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-                display: none;
+                background: #EFEAE6;
+                padding: 0;            
+                margin: 0;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                overflow: hidden;
+                max-height: 0;             
+                transition: max-height 0.25s ease;
+                list-style: none;
+                z-index: 1500;
             }
 
             .nav-menu.active {
-                display: flex;
+                padding: 20px;
+                max-height: 60vh;     
+            }
+
+            .nav-item + .nav-item {
+                margin-top: 10px;
             }
 
             .hero-title {
@@ -771,19 +795,14 @@
                 <div id="logo-fallback" class="nav-logo-fallback" style="display:none;">Py</div>
                 NTU DAC Online Judge
             </a>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a class="nav-link active" onclick="showPage(event, 'home')">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showPage(event, 'courses')">Course</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showPage(event, 'problems')">Problem</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showPage(event, 'about')">About</a>
-                </li>
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-menu" aria-label="Toggle menu">
+                <i class="fa fa-bars"></i>
+            </button>
+            <ul id="primary-menu" class="nav-menu">
+                <li class="nav-item"><a class="nav-link active" onclick="showPage(event, 'home')">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage(event, 'courses')">Course</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage(event, 'problems')">Problem</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage(event, 'about')">About</a></li>
             </ul>
         </div>
     </nav>
@@ -1439,7 +1458,7 @@
                         resultHtml += `  Error Message: ${result.error}\n`;
                     } else {
                         const status = result.passed ? 
-                            '<span class="success">✓Passed</span>' : 
+                            '<span class="success">Passed</span>' : 
                             '<span class="error">Failed</span>';
                         resultHtml += `Test Case ${result.testNum}: ${status}\n`;
                         if (result.input !== '(no input)') {
@@ -1482,7 +1501,7 @@
             } finally {
                 isRunning = false;
                 runBtn.disabled = false;
-                runBtn.textContent = 'Run Tests';
+                runBtn.textContent = 'Run';
                 progressBar.style.display = 'none';
                 progressFill.style.width = '0%';
                 updateSubmitButton();
@@ -1611,5 +1630,45 @@
             }
         });
     </script>
+    <script>
+        // Mobile Nav Toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+            const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+            navToggle.setAttribute('aria-expanded', String(!expanded));
+            navMenu.classList.toggle('active');
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                navMenu.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+            });
+
+            window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                navMenu.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+            }
+            });
+                document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                const clickedInsideMenu =
+                    navMenu.contains(e.target) || navToggle.contains(e.target);
+                if (!clickedInsideMenu) {
+                    navMenu.classList.remove('active');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                }
+            }
+            });
+        }
+</script>
+
 </body>
 </html>
